@@ -18,15 +18,18 @@
 
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
+use Illuminate\Support\Str;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\InlineKeyboardButton;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
+use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Models\Film;
 use SubLand\Models\Subtitle;
 use SubLand\Traits\HasSubtitle;
+use SubLand\Utilities\Helpers;
 use SubLand\Utilities\Subscene;
 
 class ChoseninlineresultCommand extends UserCommand
@@ -65,20 +68,43 @@ class ChoseninlineresultCommand extends UserCommand
         $this->query        = $this->inline_query->getQuery();
         $this->result_id = $this->inline_query->getResultId();
 
-        if($this->result_id != -1) {
+        $listMode = False;
+        if (Str::contains($this->result_id,'sub')){
+            // List Mode
+            $listMode = True;
+            $inline_message_id =  Str::after($this->query, '-');
+            $this->result_id = Str::after($this->result_id, 'sub');
+            $subtitle = Subtitle::find($this->result_id);
+            if (!$subtitle){
+                throw new SubNotFoundException();
+            }
+            $film = $subtitle->film;
+            $subtitle->checkDownload($film->title);
+        } else {
+            // Search Mode
+            $inline_message_id =  $this->inline_query->getInlineMessageId();
             $film = Film::firstWhere('film_id',$this->result_id);
-
             $subtitle = self::getFirstSubtitle($film);
-            $film->htmlEscape();
+        }
 
-            $data = [
-                'text' => $this->getSubtitleText($subtitle,$film),
-                'inline_message_id' => $this->inline_query->getInlineMessageId(),
-                'parse_mode' => 'html',
-                'reply_markup' => $this->getSubtitleKeyboard($subtitle)
-            ];
+        $film->htmlEscape();
 
-            $this->response = Request::editMessageText($data);
+
+        $data = [
+            'text' => $this->getSubtitleText($subtitle,$film),
+            'inline_message_id' => $inline_message_id,
+            'parse_mode' => 'html',
+            'reply_markup' => $this->getSubtitleKeyboard($subtitle, $inline_message_id)
+        ];
+
+        $this->response = Request::editMessageText($data);
+
+        if ($listMode) {
+            // Update Searching Message...
+            Request::editMessageText([
+                'text' => 'زیرنویس مورد نظر در پیام اصلی بارگذاری شد!',
+                'inline_message_id' => $this->inline_query->getInlineMessageId()
+            ]);
         }
 
         return $this->response;

@@ -70,7 +70,7 @@ class InlinequeryCommand extends UserCommand
 
 
         if (($film_id = Str::of($this->query)->match('/list:(\d*)/')) != ''){
-            $results = $this->listMode($film_id);
+            $results = $this->listMode(Str::before($film_id,'-'));
         } else {
             $results = $this->searchMode();
         }
@@ -101,7 +101,7 @@ class InlinequeryCommand extends UserCommand
         $this->normalizeResults($subtitles);
         foreach ($subtitles as $subtitle) {
             $results[] = new InlineQueryResultArticle([
-                'id' => 'sub:' . $subtitle['subtitle_id'],
+                'id' => 'sub' . $subtitle['subtitle_id'],
                 'title' => $subtitle['author_name'] . ($subtitle['extra'] != '' ? ' |' . $subtitle['extra'] : ''),
                 'description' =>  $subtitle['comment'] . $subtitle['info'],
                 'input_message_content' => new InputTextMessageContent([

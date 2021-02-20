@@ -75,12 +75,13 @@ class CallbackqueryCommand extends UserCommand
 
             $subtitle->checkDownload($film->title);
             $film->htmlEscape();
+            $inline_message_id =  $this->callback_query->getInlineMessageId();
 
             $data = [
                 'text' => $this->getSubtitleText($subtitle,$film),
-                'inline_message_id' => $this->callback_query->getInlineMessageId(),
+                'inline_message_id' => $inline_message_id,
                 'parse_mode' => 'html',
-                'reply_markup' => $this->getSubtitleKeyboard($subtitle)
+                'reply_markup' => $this->getSubtitleKeyboard($subtitle, $inline_message_id)
             ];
 
             $this->response = Request::editMessageText($data);

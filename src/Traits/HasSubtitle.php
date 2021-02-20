@@ -48,7 +48,7 @@ MYHEREDOC;
 
     }
 
-    private function getSubtitleKeyboard(Subtitle $subtitle): InlineKeyboard
+    private function getSubtitleKeyboard(Subtitle $subtitle, string $inline_message_id): InlineKeyboard
     {
         $control_key = [];
         $next_sub = $subtitle->nextSubtitle();
@@ -72,7 +72,7 @@ MYHEREDOC;
 
         $list_key = [[
             'text' => 'نمایش بصورت لیست',
-            'switch_inline_query_current_chat' => 'list:' . $subtitle->film_id
+            'switch_inline_query_current_chat' => 'list:' . $subtitle->film_id . '-' . $inline_message_id
         ]];
 
        return new InlineKeyboard($control_key,$list_key);
