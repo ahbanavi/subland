@@ -1,0 +1,77 @@
+# =========================
+# Project Files
+# =========================
+
+test.php
+
+# Vendor directory
+vendor/
+
+# PhpStorm project's cache
+.idea
+
+# VSCode project's cache
+.vscode
+
+# Log files
+php-telegram-bot-error.log
+php-telegram-bot-debug.log
+php-telegram-bot-update.log
+updates_log.log
+error_log.log
+debug_log.log
+
+.env
+.phpunit.result.cache
+.ftpquota
+
+# =========================
+# Operating System Files
+# =========================
+
+# Windows
+# =========================
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

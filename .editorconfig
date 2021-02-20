@@ -1,0 +1,20 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# PHP-Files, Composer.json, MD-Files
+[{*.php,composer.json,*.md}]
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.yml]
+indent_size = 2

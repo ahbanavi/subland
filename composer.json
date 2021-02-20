@@ -1,0 +1,39 @@
+{
+    "name": "telegram-subscene-robot/telegram-subscene-robot",
+    "description": "The Sublandbot Source Code",
+    "keywords": [
+        "robot",
+        "telegram",
+        "subscene"
+    ],
+    "type": "project",
+    "require": {
+        "php": "^7.4",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "ext-libxml": "*",
+        "ext-dom": "*",
+        "ext-pdo": "*",
+        "longman/telegram-bot": "*",
+        "vlucas/phpdotenv": "^5.2",
+        "illuminate/database": "^8.16",
+        "php-tmdb/api": "~2.1",
+        "monolog/monolog": "^2.1"
+    },
+    "autoload": {
+        "files": [
+            "src/UserCommand.php"
+        ],
+        "psr-4": {
+            "SubLand\\Models\\": "src/Models",
+            "SubLand\\Migrations\\": "src/Migrations",
+            "SubLand\\Utilities\\": "src/Utilities",
+            "SubLand\\Exceptions\\": "src/Exceptions",
+            "SubLand\\Traits\\": "src/Traits"
+        }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^5.1",
+        "robmorgan/phinx": "^0.12.4"
+    }
+}
