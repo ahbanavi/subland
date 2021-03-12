@@ -4,6 +4,7 @@
 namespace SubLand\Traits;
 
 
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\InlineKeyboardButton;
@@ -17,17 +18,29 @@ trait HasSubtitle
 
     public static function getFirstSubtitle(Film $film): Subtitle
     {
-        $subtitle = Subtitle::where('film_id',$film->film_id)->where('prev',0)->first();
+        $subtitle = Subtitle::first();
 
-        if (!$subtitle){
-            $subtitles = Subscene::getSubtitles(['url' => $film->url,'film_id' => $film->film_id]);
-            $prev = 0;
-            foreach ($subtitles['subtitles'] as $item){
-                $prev = Subtitle::addSubtitle($item,$prev);
-            }
-            $subtitle = Subtitle::where('film_id',$film->film_id)->where('prev',0)->first();
+        if (count($subtitle) && $film->updated_at->addSeconds($_ENV['SUBTITLE_CACHE_TIME'])->gt(Carbon::now())){
+            $subtitle->checkDownload($film->title);
+            return $subtitle;
         }
 
+        $subtitles = Subscene::getSubtitles(['url' => $film->url,'film_id' => $film->film_id])['subtitles'];
+
+        Subtitle::upsert($subtitles, ['url']);
+
+
+//        $prev = 0;
+//        foreach ($subtitles['subtitles'] as $item){
+//            $prev = Subtitle::addSubtitle($item,$prev);
+//            if ($prev === False){
+//                break;
+//            }
+//        }
+//        $subtitle = Subtitle::where('film_id',$film->film_id)->where('prev',0)->first();
+        $subtitle = Subtitle::first();
+
+        $film->touch();
         $subtitle->checkDownload($film->title);
         return $subtitle;
     }
@@ -51,8 +64,9 @@ MYHEREDOC;
     private function getSubtitleKeyboard(Subtitle $subtitle, string $inline_message_id): InlineKeyboard
     {
         $control_key = [];
-        $next_sub = $subtitle->nextSubtitle();
-        if ($next_sub !== false){
+        $next_sub = $subtitle->next();
+        file_put_contents('t1', json_encode($next_sub));
+        if (!$next_sub ){
             $control_key[] =[
                 'text' => 'بعدی',
                 'callback_data' => json_encode([
@@ -61,14 +75,14 @@ MYHEREDOC;
             ];
         }
 
-        if ($subtitle->prev !== 0){
-            $control_key[] = [
-                'text' => 'قبلی',
-                'callback_data' => json_encode([
-                    'subtitle_id' => $subtitle->prev
-                ])
-            ];
-        }
+//        if (!$subtitle->previous()){
+//            $control_key[] = [
+//                'text' => 'قبلی',
+//                'callback_data' => json_encode([
+//                    'subtitle_id' => $subtitle->previous()->subtitle_id
+//                ])
+//            ];
+//        }
 
         $list_key = [[
             'text' => 'نمایش بصورت لیست',

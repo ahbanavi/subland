@@ -5,6 +5,7 @@ namespace SubLand\Utilities;
 use DOMDocument;
 use DOMNodeList;
 use DOMXPath;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Models\Film;
@@ -65,7 +66,7 @@ class Subscene
         self::$page = self::curl_get_contents(self::BASE_URL.$data['url'].'/'.self::$language,true);
 
         if (!self::isLoaded() || !self::isSorted()) {
-            return self::getSubtitles($data, false);
+            return self::getSubtitles($data);
         }
 
         $result = [];
@@ -116,7 +117,7 @@ class Subscene
             $subtitles[$key]['extra'] = implode('|', $subtitles[$key]['extra']);
         }
 
-        $result['subtitles'] = array_values($subtitles);
+        $result['subtitles'] = array_reverse(array_values($subtitles));
         return $result;
     }
 

@@ -7,6 +7,7 @@ use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Traits\Escapable;
 use SubLand\Traits\HasSubtitle;
 use SubLand\Utilities\Subscene;
+use Illuminate\Database\Eloquent\Builder;
 
 class Subtitle extends Model
 {
@@ -25,17 +26,21 @@ class Subtitle extends Model
 
     public static function addSubtitle($subtitle, $prev)
     {
-        return self::firstOrCreate(['url' => $subtitle['url']],$subtitle + ['prev' => $prev])->subtitle_id;
+        $sub = self::firstOrCreate(['url' => $subtitle['url']],$subtitle + ['prev' => $prev]);
+        if ($prev != 0 && $sub->prev == 0){
+            $sub->prev = $prev;
+            $sub->update();
+            return False;
+        }
+        return $sub->subtitle_id;
     }
 
     public function deleteSubtitle(): Subtitle
     {
-        $next_subtitle = $this->nextSubtitle();
+        $next_subtitle = $this->next();
         if ($next_subtitle === false){
             throw new SubNotFoundException();
         }
-        $next_subtitle->prev = $this->prev;
-        $next_subtitle->update();
         $this->delete();
 
         return $next_subtitle;
@@ -69,4 +74,25 @@ class Subtitle extends Model
     {
         return self::firstWhere('prev',$this->subtitle_id) ?? false;
     }
+
+
+    public function previous(){
+        // get next user
+        return self::where('film_id', $this->film_id)->where('subtitle_id', '>', $this->subtitle_id)->orderBy('subtitle_id','asc')->first();
+
+    }
+    public function next(){
+        // get previous  user
+        return self::where('film_id', $this->film_id)->where('subtitle_id', '<', $this->subtitle_id)->orderBy('subtitle_id','desc')->first();
+
+    }
+
+//    protected static function boot()
+//    {
+//
+//        // Order by created_at DESC
+//        static::addGlobalScope('order', function (Builder $builder) {
+//            $builder->orderByDesc('subtitle_id');
+//        });
+//    }
 }
