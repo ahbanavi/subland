@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use SubLand\Exceptions\NoResultException;
 use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Models\User;
+use SubLand\Utilities\Subscene;
 
 
 abstract class UserCommand extends Command
@@ -33,8 +34,7 @@ abstract class UserCommand extends Command
     {
         // save or update user in database
         $user = User::firstOrNew(['user_id' => $telegramUser->getId()]);
-        $user->touch();
-
+        Subscene::setLanguage($user->language);
         return $this->user = $user;
     }
 
@@ -56,7 +56,11 @@ abstract class UserCommand extends Command
 
     public function afterExecute()
     {
-        $this->user->save();
+        $this->user->touch();
+
+        if ($this->user->isDirty()){
+            $this->user->save();
+        }
         return $this->response;
     }
 

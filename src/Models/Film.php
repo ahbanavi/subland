@@ -1,11 +1,16 @@
 <?php
 
-
 namespace SubLand\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use SubLand\Traits\Escapable;
-use SubLand\Utilities\Subscene;
+use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Film
+ *
+ * @mixin Builder
+ */
 class Film extends Model
 {
     use Escapable;

@@ -1,8 +1,15 @@
 <?php
 
 namespace SubLand\Models;
-use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * Search Query
+ *
+ * @mixin Builder
+ */
 class Query extends Model
 {
     protected $table = 'search_queries';

@@ -2,14 +2,13 @@
 
 namespace SubLand\Utilities;
 
+use Carbon\Carbon;
 use DOMDocument;
 use DOMNodeList;
 use DOMXPath;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use SubLand\Exceptions\SubNotFoundException;
-use SubLand\Models\Film;
-use Symfony\Component\Console\Helper\Helper;
+
 
 /**
  * Subscene-API-PHP
@@ -24,6 +23,14 @@ class Subscene
     private static $page = '';
     private static $cookies = 'cookies.txt';
     public const BASE_URL = 'https://subscene.com';
+    public const LANGUAGES = [
+            'farsi_persian' => ['flag' => '🇮🇷', 'title' => 'فارسی/Persian'],
+            'english' => ['flag' => '🇬🇧', 'title' => 'انگلیسی/English'],
+            'german' => ['flag' => '🇩🇪', 'title' => 'آلمانی/German'],
+            'arabic' => ['flag' => '🇦🇪', 'title' => 'عربی/Arabic'],
+            'french' => ['flag' => '🇫🇷', 'title' => 'فرانسوی/French'],
+            'russian' => ['flag' => '🇷🇺', 'title' => 'روسی/Russian']
+        ];
 
 
     public static function setLanguage($lang){
@@ -155,11 +162,11 @@ class Subscene
         }
         $result['details'] = preg_replace("/^.*(?:-).*$(?:\r\n|\n)?/m",'',$result['details']);
         preg_match('/(\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2} [A|P]M)/',$result['details'],$date);
-        $result['release_at'] = \Carbon\Carbon::parse($date[0])->toDateTime();
+        $result['release_at'] = Carbon::parse($date[0])->toDateTime();
 
         $download_url = self::BASE_URL.$download_url[0]->nodeValue;
         $file_name = Helpers::normalChars($data['title']) . " - $data[language]" . $data['extra']  . " [@$_ENV[BOT_USER_NAME]";
-        $lang = self::$language == 'farsi_persian' ? '🇮🇷 Persian Subtitle' : '🇬🇧 English Subtitle';
+        $lang = self::LANGUAGES[$data['language']]['flag'] . ' ' . self::LANGUAGES[$data['language']]['title'];
 
         $caption = "<b>Author:</b> <code>" . str_ireplace('.','',$data['author_name']) . "</code>\n" . $lang . $data['extra'];
 

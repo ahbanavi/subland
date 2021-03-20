@@ -1,9 +1,16 @@
 <?php
 
 namespace SubLand\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use SubLand\Traits\Escapable;
+use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * User
+ *
+ * @mixin Builder
+ */
 class User extends Model
 {
     use Escapable;

@@ -65,12 +65,13 @@ class ChoseninlineresultCommand extends UserCommand
     {
         // Information about the chosen result is returned.
         $this->inline_query = $this->getChosenInlineResult();
+        $this->setUser($this->inline_query->getFrom());
         $this->query        = $this->inline_query->getQuery();
         $this->result_id = $this->inline_query->getResultId();
 
         $listMode = False;
         if (Str::contains($this->result_id,'sub')){
-            // List Mode
+            // From List Mode
             $listMode = True;
             $inline_message_id =  Str::after($this->query, '-');
             $this->result_id = Str::after($this->result_id, 'sub');
@@ -81,7 +82,7 @@ class ChoseninlineresultCommand extends UserCommand
             $film = $subtitle->film;
             $subtitle->checkDownload($film->title);
         } else {
-            // Search Mode
+            // From Search Mode
             $inline_message_id =  $this->inline_query->getInlineMessageId();
             $film = Film::firstWhere('film_id',$this->result_id);
             $subtitle = self::getFirstSubtitle($film);

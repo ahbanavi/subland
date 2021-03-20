@@ -2,6 +2,7 @@
 
 
 namespace SubLand\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Traits\Escapable;
@@ -9,6 +10,11 @@ use SubLand\Traits\HasSubtitle;
 use SubLand\Utilities\Subscene;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Subtitle
+ *
+ * @mixin Builder
+ */
 class Subtitle extends Model
 {
     use Escapable;
@@ -24,16 +30,6 @@ class Subtitle extends Model
         return $this->hasOne('SubLand\Models\Film','film_id','film_id');
     }
 
-    public static function addSubtitle($subtitle, $prev)
-    {
-        $sub = self::firstOrCreate(['url' => $subtitle['url']],$subtitle + ['prev' => $prev]);
-        if ($prev != 0 && $sub->prev == 0){
-            $sub->prev = $prev;
-            $sub->update();
-            return False;
-        }
-        return $sub->subtitle_id;
-    }
 
     public function deleteSubtitle(): Subtitle
     {
@@ -65,34 +61,42 @@ class Subtitle extends Model
         return $this;
     }
 
+
+    /**
+     * Find previous Subtitle on the list
+     *
+     * @return null|Subtitle
+     */
+    public function previous(): ?Subtitle
+    {
+        return self::where('film_id', $this->film_id)
+            ->where('language', $this->language)
+            ->where('subtitle_id', '>', $this->subtitle_id)
+            ->orderBy('subtitle_id')->first();
+    }
+
     /**
      * Find Next Subtitle on the list
      *
-     * @return false|Subtitle
+     * @return null|Subtitle
      */
-    public function nextSubtitle()
+    public function next(): ?Subtitle
     {
-        return self::firstWhere('prev',$this->subtitle_id) ?? false;
+        return self::where('film_id', $this->film_id)
+            ->where('language', $this->language)
+            ->where('subtitle_id', '<', $this->subtitle_id)
+            ->orderBy('subtitle_id','desc')->first();
     }
 
-
-    public function previous(){
-        // get next user
-        return self::where('film_id', $this->film_id)->where('subtitle_id', '>', $this->subtitle_id)->orderBy('subtitle_id','asc')->first();
-
-    }
-    public function next(){
-        // get previous  user
-        return self::where('film_id', $this->film_id)->where('subtitle_id', '<', $this->subtitle_id)->orderBy('subtitle_id','desc')->first();
-
+    public function scopeLanguage($query, $language)
+    {
+        return $query->where('language', $language);
     }
 
-//    protected static function boot()
-//    {
-//
-//        // Order by created_at DESC
-//        static::addGlobalScope('order', function (Builder $builder) {
-//            $builder->orderByDesc('subtitle_id');
-//        });
-//    }
+    protected static function boot()
+    {
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->orderByDesc('subtitle_id');
+        });
+    }
 }

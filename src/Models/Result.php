@@ -1,9 +1,15 @@
 <?php
 
-
 namespace SubLand\Models;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * Search Results
+ *
+ * @mixin Builder
+ */
 class Result extends Pivot
 {
     protected $table = 'film_query';

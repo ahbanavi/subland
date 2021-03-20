@@ -26,13 +26,8 @@ use Longman\TelegramBot\Entities\InlineKeyboardButton;
 use Longman\TelegramBot\Entities\InlineQuery;
 use Longman\TelegramBot\Entities\InlineQuery\InlineQueryResultArticle;
 use Longman\TelegramBot\Entities\InputMessageContent\InputTextMessageContent;
-use Longman\TelegramBot\Entities\LoginUrl;
-use Longman\TelegramBot\Entities\ServerResponse;
-use Longman\TelegramBot\Request;
 use SubLand\Exceptions\NoResultException;
 use SubLand\Models\Film;
-use SubLand\Models\Query;
-use SubLand\Models\Result;
 use SubLand\Utilities\SubCache;
 use SubLand\Utilities\Subscene;
 
@@ -67,8 +62,6 @@ class InlinequeryCommand extends UserCommand
         $this->offset = (int) $this->inline_query->getOffset() ?? 0;
 
 
-
-
         if (($film_id = Str::of($this->query)->match('/list:(\d*)/')) != ''){
             $results = $this->listMode(Str::before($film_id,'-'));
         } else {
@@ -94,7 +87,7 @@ class InlinequeryCommand extends UserCommand
         $results = [];
         /** @var Film $film */
         $film = Film::find($film_id);
-        $subtitles = $film->subtitles->toArray();
+        $subtitles = $film->subtitles->where('language', $this->user->language)->toArray();
         if (count($subtitles) === 0) {
             throw new NoResultException($this->query);
         }

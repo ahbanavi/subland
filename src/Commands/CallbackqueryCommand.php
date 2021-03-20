@@ -20,22 +20,20 @@
 
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Longman\TelegramBot\Commands\UserCommand;
-use Longman\TelegramBot\Entities\InlineKeyboard;
-use Longman\TelegramBot\Entities\InlineKeyboardButton;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Models\Subtitle;
 use SubLand\Traits\HasSubtitle;
+use SubLand\Traits\Language;
 use SubLand\Utilities\Subscene;
-use function Composer\Autoload\includeFile;
 
 class CallbackqueryCommand extends UserCommand
 {
     use HasSubtitle;
+    use Language;
+
     /**
      * @var string
      */
@@ -63,9 +61,10 @@ class CallbackqueryCommand extends UserCommand
     {
         $this->callback_query = $this->getCallbackQuery();
         $this->setUser($this->callback_query->getFrom());
-        $callback_data  = json_decode($this->callback_query->getData());
+        $inline_message_id = $this->callback_query->getInlineMessageId();
+        $callback_data = json_decode($this->callback_query->getData());
 
-
+        $answer_data = $data = [];
         if (array_key_exists('subtitle_id',$callback_data)){
             $subtitle = Subtitle::find($callback_data->subtitle_id);
             if (!$subtitle){
@@ -75,7 +74,6 @@ class CallbackqueryCommand extends UserCommand
 
             $subtitle->checkDownload($film->title);
             $film->htmlEscape();
-            $inline_message_id =  $this->callback_query->getInlineMessageId();
 
             $data = [
                 'text' => $this->getSubtitleText($subtitle,$film),
@@ -84,14 +82,36 @@ class CallbackqueryCommand extends UserCommand
                 'reply_markup' => $this->getSubtitleKeyboard($subtitle, $inline_message_id)
             ];
 
-            $this->response = Request::editMessageText($data);
+            $answer_data = [
+                'text'       => 'loaded.',
+                'show_alert' =>  false
+            ];
+
+        } elseif (array_key_exists('language',$callback_data)){
+            if (in_array($callback_data->language, array_keys(Subscene::LANGUAGES))){
+                $this->user->language = $callback_data->language;
+                $this->user->save();
+
+                $data = [
+                    'text' => $this->getLanguageMessage(),
+                    'chat_id' => $this->user->user_id,
+                    'message_id' => $this->callback_query->getMessage()->getMessageId(),
+                    'reply_markup' => [
+                        'inline_keyboard' => $this->getLanguageKeys()
+                    ]
+                ];
+
+                $answer_data = [
+                    'text'       => 'زبان ' . Subscene::LANGUAGES[$callback_data->language]['flag'] . ' با موفقیت ثبت شد.',
+                    'show_alert' =>  false
+                ];
+            }
+
         }
 
-        $data = [
-            'text'       => 'loaded.',
-            'show_alert' =>  false
-        ];
-        $this->callback_query->answer($data);
+
+        $this->response = Request::editMessageText($data);
+        $this->callback_query->answer($answer_data);
 
         return $this->response;
     }

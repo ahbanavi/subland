@@ -16,9 +16,10 @@ use SubLand\Utilities\Subscene;
 trait HasSubtitle
 {
 
-    public static function getFirstSubtitle(Film $film): Subtitle
+    public function getFirstSubtitle(Film $film): Subtitle
     {
-        $subtitle = Subtitle::first();
+        /** @var Subtitle $subtitle */
+        $subtitle = $film->subtitles()->language($this->user->language)->first();
 
         if (count($subtitle) && $film->updated_at->addSeconds($_ENV['SUBTITLE_CACHE_TIME'])->gt(Carbon::now())){
             $subtitle->checkDownload($film->title);
@@ -29,15 +30,6 @@ trait HasSubtitle
 
         Subtitle::upsert($subtitles, ['url']);
 
-
-//        $prev = 0;
-//        foreach ($subtitles['subtitles'] as $item){
-//            $prev = Subtitle::addSubtitle($item,$prev);
-//            if ($prev === False){
-//                break;
-//            }
-//        }
-//        $subtitle = Subtitle::where('film_id',$film->film_id)->where('prev',0)->first();
         $subtitle = Subtitle::first();
 
         $film->touch();
@@ -65,8 +57,7 @@ MYHEREDOC;
     {
         $control_key = [];
         $next_sub = $subtitle->next();
-        file_put_contents('t1', json_encode($next_sub));
-        if (!$next_sub ){
+        if ($next_sub){
             $control_key[] =[
                 'text' => 'بعدی',
                 'callback_data' => json_encode([
@@ -75,14 +66,15 @@ MYHEREDOC;
             ];
         }
 
-//        if (!$subtitle->previous()){
-//            $control_key[] = [
-//                'text' => 'قبلی',
-//                'callback_data' => json_encode([
-//                    'subtitle_id' => $subtitle->previous()->subtitle_id
-//                ])
-//            ];
-//        }
+        $prev_sub = $subtitle->previous();
+        if ($prev_sub){
+            $control_key[] = [
+                'text' => 'قبلی',
+                'callback_data' => json_encode([
+                    'subtitle_id' => $prev_sub->subtitle_id
+                ])
+            ];
+        }
 
         $list_key = [[
             'text' => 'نمایش بصورت لیست',
