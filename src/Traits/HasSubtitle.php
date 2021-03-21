@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\InlineKeyboardButton;
+use SubLand\Exceptions\NoResultException;
+use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Models\Film;
 use SubLand\Models\Subtitle;
 use SubLand\Utilities\Helpers;
@@ -16,21 +18,24 @@ use SubLand\Utilities\Subscene;
 trait HasSubtitle
 {
 
-    public function getFirstSubtitle(Film $film): Subtitle
+    public function getFirstSubtitle(Film $film, $force = false): Subtitle
     {
         /** @var Subtitle $subtitle */
         $subtitle = $film->subtitles()->language($this->user->language)->first();
 
-        if (count($subtitle) && $film->updated_at->addSeconds($_ENV['SUBTITLE_CACHE_TIME'])->gt(Carbon::now())){
+        if ($force || ($subtitle && $subtitle->updated_at->addSeconds($_ENV['SUBTITLE_CACHE_TIME'])->gt(Carbon::now()))){
+            $subtitle->touch();
             $subtitle->checkDownload($film->title);
             return $subtitle;
         }
 
         $subtitles = Subscene::getSubtitles($film->url)['subtitles'];
+        if ($subtitles == []){
+            throw new SubNotFoundException();
+        }
         data_fill($subtitles, '*.film_id', $film->film_id);
         Subtitle::upsert($subtitles, ['url']);
-        $film->touch();
-        return $this->getFirstSubtitle($film);
+        return $this->getFirstSubtitle($film, true);
     }
 
     private static function getSubtitleText(Subtitle $subtitle,Film $film): string

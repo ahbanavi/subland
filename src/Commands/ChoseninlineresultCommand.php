@@ -73,8 +73,8 @@ class ChoseninlineresultCommand extends UserCommand
         if (Str::contains($this->result_id,'sub')){
             // From List Mode
             $listMode = True;
-            preg_match('/list:\d*\-[a-z\_]*\-(.*)/s', $this->query, $matches);
-            $inline_message_id = $matches[1];
+            preg_match("/list:\d*\-[a-z\_]*\-(.*)/s", $this->query, $matches);
+            $this->inline_message_id = $matches[1];
             $this->result_id = Str::after($this->result_id, 'sub');
             $subtitle = Subtitle::find($this->result_id);
             if (!$subtitle){
@@ -84,7 +84,7 @@ class ChoseninlineresultCommand extends UserCommand
             $subtitle->checkDownload($film->title);
         } else {
             // From Search Mode
-            $inline_message_id = $this->inline_query->getInlineMessageId();
+            $this->inline_message_id = $this->inline_query->getInlineMessageId();
             $film = Film::firstWhere('film_id',$this->result_id);
             $subtitle = $this->getFirstSubtitle($film);
         }
@@ -94,9 +94,9 @@ class ChoseninlineresultCommand extends UserCommand
 
         $data = [
             'text' => $this->getSubtitleText($subtitle,$film),
-            'inline_message_id' => $inline_message_id,
+            'inline_message_id' => $this->inline_message_id,
             'parse_mode' => 'html',
-            'reply_markup' => $this->getSubtitleKeyboard($subtitle, $inline_message_id)
+            'reply_markup' => $this->getSubtitleKeyboard($subtitle, $this->inline_message_id)
         ];
 
         $this->response = Request::editMessageText($data);

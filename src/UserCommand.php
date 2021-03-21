@@ -15,6 +15,7 @@ namespace Longman\TelegramBot\Commands;
 use Carbon\Carbon;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Exception\TelegramException;
+use Longman\TelegramBot\Request;
 use SubLand\Exceptions\NoResultException;
 use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Models\User;
@@ -55,8 +56,22 @@ abstract class UserCommand extends Command
         } catch (SubNotFoundException $exception){
             if (isset($this->callback_query)){
                 $this->callback_query->answer(['text' => $exception->getMessage() ?? 'متاسفانه زیرنویس مورد نظر در دیتابیس یافت نشد. لطفا مجددا جستجو نمایید.','show_alert' => true]);
+                $this->response = null;
+            } elseif (isset($this->inline_query)){
+                $lang = Subscene::LANGUAGES[$this->user->language];
+                $data = [
+                    'text' => "⚠️ متاسفانه تا کنون زیرنویس $lang[title] $lang[flag] برای این فیلم/سریال منتشر نشده است.\nلطفا در آینده مجددا تلاش کنید.\n🌍 همچنین برای تغییر زبان از دستور /settings استفاده کنید.",
+                    'inline_message_id' => $this->inline_message_id,
+                    'parse_mode' => 'html',
+                    'reply_markup' => [
+                        'inline_keyboard' =>[[
+                            ['text' => '🔍 جستجو مجدد...','switch_inline_query_current_chat' => $this->query]
+                        ]]
+                    ]
+                ];
+
+                $this->response = Request::editMessageText($data);
             }
-            $this->response = null;
         }
 
         $this->afterExecute();
