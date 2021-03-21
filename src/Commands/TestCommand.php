@@ -15,7 +15,13 @@ class TestCommand extends UserCommand
     protected $usage = '/test';                    // Usage of your command
     protected $version = '1.0.1';                  // Version of your command
 
-    public function execute()
+    /**
+     * Execute command
+     *
+     * @return ServerResponse
+     * @throws TelegramException
+     */
+    public function execute() :ServerResponse
     {
         $message = $this->getMessage();            // Get Message object
         $this->setUser($message->getFrom());

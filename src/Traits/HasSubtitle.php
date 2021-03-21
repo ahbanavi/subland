@@ -26,15 +26,11 @@ trait HasSubtitle
             return $subtitle;
         }
 
-        $subtitles = Subscene::getSubtitles(['url' => $film->url,'film_id' => $film->film_id])['subtitles'];
-
+        $subtitles = Subscene::getSubtitles($film->url)['subtitles'];
+        data_fill($subtitles, '*.film_id', $film->film_id);
         Subtitle::upsert($subtitles, ['url']);
-
-        $subtitle = Subtitle::first();
-
         $film->touch();
-        $subtitle->checkDownload($film->title);
-        return $subtitle;
+        return $this->getFirstSubtitle($film);
     }
 
     private static function getSubtitleText(Subtitle $subtitle,Film $film): string
@@ -78,7 +74,7 @@ MYHEREDOC;
 
         $list_key = [[
             'text' => 'نمایش بصورت لیست',
-            'switch_inline_query_current_chat' => 'list:' . $subtitle->film_id . '-' . $inline_message_id
+            'switch_inline_query_current_chat' => 'list:' . $subtitle->film_id . '-' . $subtitle->language . '-' . $inline_message_id
         ]];
 
        return new InlineKeyboard($control_key,$list_key);

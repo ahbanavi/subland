@@ -13,6 +13,8 @@
 namespace Longman\TelegramBot\Commands;
 
 use Carbon\Carbon;
+use Longman\TelegramBot\Entities\ServerResponse;
+use Longman\TelegramBot\Exception\TelegramException;
 use SubLand\Exceptions\NoResultException;
 use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Models\User;
@@ -38,7 +40,13 @@ abstract class UserCommand extends Command
         return $this->user = $user;
     }
 
-    public function preExecute()
+    /**
+     * Pre-execute command
+     *
+     * @return ServerResponse
+     * @throws TelegramException
+     */
+    public function preExecute() :ServerResponse
     {
         try {
             $this->execute();

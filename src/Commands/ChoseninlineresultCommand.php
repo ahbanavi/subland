@@ -73,7 +73,8 @@ class ChoseninlineresultCommand extends UserCommand
         if (Str::contains($this->result_id,'sub')){
             // From List Mode
             $listMode = True;
-            $inline_message_id =  Str::after($this->query, '-');
+            preg_match('/list:\d*\-[a-z\_]*\-(.*)/s', $this->query, $matches);
+            $inline_message_id = $matches[1];
             $this->result_id = Str::after($this->result_id, 'sub');
             $subtitle = Subtitle::find($this->result_id);
             if (!$subtitle){
@@ -83,9 +84,9 @@ class ChoseninlineresultCommand extends UserCommand
             $subtitle->checkDownload($film->title);
         } else {
             // From Search Mode
-            $inline_message_id =  $this->inline_query->getInlineMessageId();
+            $inline_message_id = $this->inline_query->getInlineMessageId();
             $film = Film::firstWhere('film_id',$this->result_id);
-            $subtitle = self::getFirstSubtitle($film);
+            $subtitle = $this->getFirstSubtitle($film);
         }
 
         $film->htmlEscape();

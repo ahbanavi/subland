@@ -67,13 +67,13 @@ class Subscene
         return array_values($results);
     }
 
-    public static function getSubtitles(array $data, bool $exit_on_bad_request = false): array
+    public static function getSubtitles(string $subtitles_list_url, bool $exit_on_bad_request = false): array
     {
 
-        self::$page = self::curl_get_contents(self::BASE_URL.$data['url'].'/'.self::$language,true);
+        self::$page = self::curl_get_contents(self::BASE_URL.$subtitles_list_url.'/'.self::$language,true);
 
         if (!self::isLoaded() || !self::isSorted()) {
-            return self::getSubtitles($data);
+            return self::getSubtitles($subtitles_list_url);
         }
 
         $result = [];
@@ -94,7 +94,7 @@ class Subscene
             if ($exit_on_bad_request) {
                 return [];
             }
-            return self::getSubtitles($data, true);
+            return self::getSubtitles($subtitles_list_url, true);
         }
         $subtitles = [];
         foreach ($subtitle_nodes as $subtitle_node) {
@@ -113,9 +113,8 @@ class Subscene
             $author_node = self::xpathQuery("//td[@class='a5']/a/@href", $subtitle_node_html);
             $author_url = $author_node[0]->nodeValue ?? 'Anonymous';
             $author_url = trim($author_url);
-            $film_id = $data['film_id'];
             $comment = Helpers::mbWordWrap(Helpers::cleanSpace(self::xpathQuery("//td[@class='a6']/div/text()", $subtitle_node_html)[0]->nodeValue));
-            $subtitles[$url] = compact('info', 'language', 'author_name','author_url', 'comment', 'url','film_id');
+            $subtitles[$url] = compact('info', 'language', 'author_name','author_url', 'comment', 'url');
         }
 
         foreach ($subtitles as $key => $subtitle){
@@ -166,7 +165,7 @@ class Subscene
 
         $download_url = self::BASE_URL.$download_url[0]->nodeValue;
         $file_name = Helpers::normalChars($data['title']) . " - $data[language]" . $data['extra']  . " [@$_ENV[BOT_USER_NAME]";
-        $lang = self::LANGUAGES[$data['language']]['flag'] . ' ' . self::LANGUAGES[$data['language']]['title'];
+        $lang = 'Language: ' . self::LANGUAGES[$data['language']]['flag'] . ' ' . self::LANGUAGES[$data['language']]['title'];
 
         $caption = "<b>Author:</b> <code>" . str_ireplace('.','',$data['author_name']) . "</code>\n" . $lang . $data['extra'];
 

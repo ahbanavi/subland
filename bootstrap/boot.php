@@ -10,9 +10,6 @@ $dotenv->load();
 
 $config = require_once dirname(__DIR__) . '/config/bot_config.php';
 
-$TMDB = new \Tmdb\Client(new \Tmdb\ApiToken($config['tmdb_api_key']));
-
-
 $capsule = new Capsule;
 
 $capsule->addConnection([

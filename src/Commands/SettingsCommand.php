@@ -3,6 +3,8 @@
 namespace Longman\TelegramBot\Commands\UserCommands;
 
 use Longman\TelegramBot\Commands\UserCommand;
+use Longman\TelegramBot\Entities\ServerResponse;
+use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Request;
 use SubLand\Utilities\Subscene;
 use SubLand\Traits\Language;
@@ -15,8 +17,13 @@ class SettingsCommand extends UserCommand
     protected $usage = '/settings';
     protected $version = '1.0';
 
-
-    public function execute()
+    /**
+     * Execute command
+     *
+     * @return ServerResponse
+     * @throws TelegramException
+     */
+    public function execute() :ServerResponse
     {
         $message = $this->getMessage();
         $this->setUser($message->getFrom());

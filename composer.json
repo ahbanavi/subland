@@ -17,7 +17,6 @@
         "longman/telegram-bot": "*",
         "vlucas/phpdotenv": "^5.2",
         "illuminate/database": "^8.16",
-        "php-tmdb/api": "~2.1",
         "monolog/monolog": "^2.1"
     },
     "autoload": {

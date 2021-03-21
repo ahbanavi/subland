@@ -18,17 +18,19 @@
 
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
+use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\InlineKeyboardButton;
 use Longman\TelegramBot\Entities\InlineQuery;
 use Longman\TelegramBot\Entities\InlineQuery\InlineQueryResultArticle;
 use Longman\TelegramBot\Entities\InputMessageContent\InputTextMessageContent;
+use Longman\TelegramBot\Entities\ServerResponse;
+use Longman\TelegramBot\Exception\TelegramException;
 use SubLand\Exceptions\NoResultException;
 use SubLand\Models\Film;
-use SubLand\Utilities\SubCache;
+use SubLand\Models\Query;
 use SubLand\Utilities\Subscene;
 
 class InlinequeryCommand extends UserCommand
@@ -54,7 +56,13 @@ class InlinequeryCommand extends UserCommand
 
     protected $offset;
 
-    public function execute()
+    /**
+     * Execute command
+     *
+     * @return ServerResponse
+     * @throws TelegramException
+     */
+    public function execute() :ServerResponse
     {
         $this->inline_query = $this->getInlineQuery();
         $this->setUser($this->inline_query->getFrom());
@@ -62,8 +70,8 @@ class InlinequeryCommand extends UserCommand
         $this->offset = (int) $this->inline_query->getOffset() ?? 0;
 
 
-        if (($film_id = Str::of($this->query)->match('/list:(\d*)/')) != ''){
-            $results = $this->listMode(Str::before($film_id,'-'));
+        if (preg_match('/list:(\d*)\-([a-z\_]*)\-(.*)/s', $this->query, $matches)){
+            $results = $this->listMode($matches[1], $matches[2]);
         } else {
             $results = $this->searchMode();
         }
@@ -82,12 +90,12 @@ class InlinequeryCommand extends UserCommand
     }
 
 
-    public function listMode($film_id): array
+    public function listMode($film_id, $language): array
     {
         $results = [];
         /** @var Film $film */
         $film = Film::find($film_id);
-        $subtitles = $film->subtitles->where('language', $this->user->language)->toArray();
+        $subtitles = $film->subtitles->where('language', $language)->toArray();
         if (count($subtitles) === 0) {
             throw new NoResultException($this->query);
         }
@@ -113,7 +121,7 @@ class InlinequeryCommand extends UserCommand
     {
         $results = [];
 
-        $search = SubCache::getFilms($this->query)->toArray();
+        $search = self::getFilms($this->query)->toArray();
 
         if (count($search) === 0) {
             throw new NoResultException($this->query);
@@ -152,6 +160,81 @@ class InlinequeryCommand extends UserCommand
         }
 
         return $total_count;
+    }
+
+
+    /**
+     * Get New Films based on cache or source
+     *
+     * @param string $searchQuery
+     * @return Film[]
+     */
+    public static function getFilms(string $searchQuery)
+    {
+        $searchQuery = Str::lower($searchQuery);
+
+        /** @var Query $Query */
+        /** @var Film $films */
+        /** @var Carbon $updated_at */
+        $Query = Query::firstOrCreate(['query' => $searchQuery]);
+        $films = $Query->films;
+        $updated_at = $Query->updated_at;
+
+        if ($searchQuery == ''){
+            // home page
+            $searchMethod = 'getHome';
+            $cacheTimeKey = 'HOME_CACHE_TIME';
+        } else {
+            $searchMethod = 'search';
+            $cacheTimeKey = 'SEARCH_CACHE_TIME';
+        }
+
+        if ($updated_at->addSeconds($_ENV[$cacheTimeKey])->gt(Carbon::now()) && count($films)){
+            // Use Cache
+            return $films;
+        } else {
+            // Update Cache
+            if ($searchQuery == ''){
+                $fresh = Subscene::$searchMethod();
+            } else {
+                $fresh = Subscene::$searchMethod($searchQuery);
+            }
+
+            $ids = self::getFilmIds($fresh);
+
+            return $Query->syncFilms($ids)->films;
+        }
+    }
+
+    /**
+     * Save new items to database and update old ones if required
+     *
+     * @param   array $films
+     * @return  int[]
+     */
+    private static function getFilmIds(array $films)
+    {
+        $ids = [];
+        foreach ($films as ['title' => $title, 'poster' => $poster, 'url' => $url, 'imdb' => $imdb]){
+
+            /** @var Film $new_film */
+            $new_film         = Film::firstOrNew(['url' => $url]);
+            $new_film->url    = $url;
+            $new_film->title  = $title;
+
+            if (isset($poster)) {
+                $new_film->poster = $poster;
+            }
+
+            if (isset($imdb)) {
+                $new_film->imdb = $imdb;
+            }
+
+            $new_film->save();
+            $ids[] = $new_film->film_id;
+        }
+
+        return $ids;
     }
 
 
