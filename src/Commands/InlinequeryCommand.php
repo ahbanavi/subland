@@ -1,21 +1,5 @@
 <?php
 
-/**
- * This file is part of the PHP Telegram Bot example-bot package.
- * https://github.com/php-telegram-bot/example-bot/
- *
- * (c) PHP Telegram Bot Team
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-/**
- * Inline query command
- *
- * Command that handles inline queries and returns a list of results.
- */
-
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use Carbon\Carbon;
@@ -27,7 +11,6 @@ use Longman\TelegramBot\Entities\InlineQuery;
 use Longman\TelegramBot\Entities\InlineQuery\InlineQueryResultArticle;
 use Longman\TelegramBot\Entities\InputMessageContent\InputTextMessageContent;
 use Longman\TelegramBot\Entities\ServerResponse;
-use Longman\TelegramBot\Exception\TelegramException;
 use SubLand\Exceptions\NoResultException;
 use SubLand\Models\Film;
 use SubLand\Models\Query;
@@ -35,32 +18,15 @@ use SubLand\Utilities\Subscene;
 
 class InlinequeryCommand extends UserCommand
 {
-    /**
-     * @var string
-     */
-    protected $name = 'inlinequery';
-
-    /**
-     * @var string
-     */
-    protected $description = 'Handle inline query';
-
-    /**
-     * @var string
-     */
-    protected $version = '0.1';
-
     protected InlineQuery $inline_query;
-
     protected string $query;
-
     protected $offset;
 
     /**
      * Execute command
      *
      * @return ServerResponse
-     * @throws TelegramException
+     * @throws NoResultException
      */
     public function execute() :ServerResponse
     {
@@ -106,7 +72,7 @@ class InlinequeryCommand extends UserCommand
                 'title' => $subtitle['author_name'] . ($subtitle['extra'] != '' ? ' |' . $subtitle['extra'] : ''),
                 'description' =>  $subtitle['comment'] . $subtitle['info'],
                 'input_message_content' => new InputTextMessageContent([
-                    'message_text' => 'در حال بارگذاری...',
+                    'message_text' => trans('loading'),
                 ]),
                 'reply_markup' => new InlineKeyboard([
                     new InlineKeyboardButton(['text' => 'Subscene URL','url' => Subscene::BASE_URL . $subtitle['url']])
@@ -136,7 +102,7 @@ class InlinequeryCommand extends UserCommand
                 'thumb_url' => $item['poster'] ?? '',
                 'description' =>  $key + 1 . '/' . $total_count,
                 'input_message_content' => new InputTextMessageContent([
-                    'message_text' => 'در حال بارگذاری...',
+                    'message_text' => trans('loading'),
                 ]),
                 'reply_markup' => new InlineKeyboard([
                     new InlineKeyboardButton(['text' => 'Subscene URL','url' => Subscene::BASE_URL . $item['url']])

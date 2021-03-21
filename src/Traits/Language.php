@@ -11,10 +11,7 @@ trait Language
     private function getLanguageMessage(): string
     {
         $current_lang = Subscene::LANGUAGES[$this->user->language];
-        return <<< MYHEREDOC
-🌍 زبان جستجو شما در حال حاضر بر روی $current_lang[title] $current_lang[flag] تنظیم شده است.
-برای تغییر، لطفا زبان مورد نظر خود را انتخاب کنید:
-MYHEREDOC;
+        return trans('change_subtitle_language', ['%lang' => $current_lang['title'] . ' ' . $current_lang['flag']]);
     }
 
     private function getLanguageKeys(): array

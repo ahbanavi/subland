@@ -20,46 +20,26 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use Illuminate\Support\Str;
 use Longman\TelegramBot\Commands\UserCommand;
-use Longman\TelegramBot\Entities\InlineKeyboard;
-use Longman\TelegramBot\Entities\InlineKeyboardButton;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
-use Longman\TelegramBot\Telegram;
 use SubLand\Exceptions\SubNotFoundException;
 use SubLand\Models\Film;
 use SubLand\Models\Subtitle;
 use SubLand\Traits\HasSubtitle;
-use SubLand\Utilities\Helpers;
-use SubLand\Utilities\Subscene;
 
 class ChoseninlineresultCommand extends UserCommand
 {
     use HasSubtitle;
-    /**
-     * @var string
-     */
-    protected $name = 'choseninlineresult';
-
-    /**
-     * @var string
-     */
-    protected $description = 'Handle the chosen inline result';
-
-    /**
-     * @var string
-     */
-    protected $version = '1.2.0';
 
     protected $inline_query;
-
     protected $query;
-
     protected $result_id;
 
     /**
      * Main command execution
      *
      * @return ServerResponse
+     * @throws SubNotFoundException
      */
     public function execute(): ServerResponse
     {
@@ -104,7 +84,7 @@ class ChoseninlineresultCommand extends UserCommand
         if ($listMode) {
             // Update Searching Message...
             Request::editMessageText([
-                'text' => 'زیرنویس مورد نظر در پیام اصلی بارگذاری شد!',
+                'text' => trans('subtitle_loaded'),
                 'inline_message_id' => $this->inline_query->getInlineMessageId()
             ]);
         }

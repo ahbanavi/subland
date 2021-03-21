@@ -2,16 +2,14 @@
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
+use Carbon\Carbon;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Request;
-use SubLand\Traits\Language;
 
-class SettingsCommand extends UserCommand
+class PingCommand extends UserCommand
 {
-    use Language;
-
     /**
      * Execute command
      *
@@ -24,16 +22,6 @@ class SettingsCommand extends UserCommand
         $this->setUser($message->getFrom());
         $chat_id = $message->getChat()->getId();
 
-        $data = [
-            'chat_id' => $chat_id,
-            'text' => $this->getLanguageMessage(),
-            'reply_markup' => [
-                'inline_keyboard' => $this->getLanguageKeys()
-            ]
-        ];
-
-        return $this->response = Request::sendMessage($data);
+        return $this->response = Request::sendMessage(['chat_id' => $chat_id, 'text' => 'Pong']);
     }
-
-
 }

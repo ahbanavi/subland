@@ -36,8 +36,10 @@ abstract class UserCommand extends Command
     protected function setUser(\Longman\TelegramBot\Entities\User $telegramUser): User
     {
         // save or update user in database
+        global $local_lang;
         $user = User::firstOrNew(['user_id' => $telegramUser->getId()]);
         Subscene::setLanguage($user->language);
+        $local_lang = $user->local_language;
         return $this->user = $user;
     }
 

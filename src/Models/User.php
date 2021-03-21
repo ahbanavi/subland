@@ -22,7 +22,8 @@ class User extends Model
     protected $guarded = [];
 
     protected $attributes = [
-        'language' => 'farsi_persian'
+        'language' => 'farsi_persian',
+        'local_language' => 'en'
     ];
 
     public function setLanguageAttribute($value)

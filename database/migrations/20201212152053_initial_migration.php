@@ -11,6 +11,7 @@ final class InitialMigration extends Migration
         $this->schema->create('users', function(Illuminate\Database\Schema\Blueprint $table){
             $table->unsignedBigInteger('user_id')->primary();
             $table->string('language',15)->default('farsi_persian');
+            $table->string('local_language',3)->default('en');
             $table->timestamps();
         });
 

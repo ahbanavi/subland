@@ -4,6 +4,23 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 error_reporting(E_ALL);
 require_once 'vendor/autoload.php';
+$local_lang = 'fa';
+$translator_arr = [];
+
+// translator function
+if (!function_exists('trans')){
+    function trans($path, $params = []){
+        global $local_lang, $translator_arr;
+        if (!$translator_arr){
+            $translator_arr = include dirname(__DIR__) . '/resources/lang/' . $local_lang . '.php';
+        }
+        if ($params){
+            return str_replace(array_keys($params), array_values($params), $translator_arr[$path]);
+        } else {
+            return $translator_arr[$path];
+        }
+    }
+}
 
 $dotenv = Dotenv\Dotenv::createImmutable(realpath(dirname(__FILE__) . "/../"));
 $dotenv->load();
