@@ -20,7 +20,9 @@ trait HasSubtitle
         $subtitle = $film->subtitles()->language($this->user->language)->first();
 
         if ($force || ($subtitle && $subtitle->updated_at->addSeconds($_ENV['SUBTITLE_CACHE_TIME'])->gt(Carbon::now()))){
-            $subtitle->touch();
+            if ($force){
+                $subtitle->touch();
+            }
             $subtitle->checkDownload($film->title);
             return $subtitle;
         }
