@@ -15,12 +15,14 @@ use SubLand\Exceptions\NoResultException;
 use SubLand\Models\Film;
 use SubLand\Models\Query;
 use SubLand\Utilities\Subscene;
+use Longman\TelegramBot\Request;
 
 class InlinequeryCommand extends UserCommand
 {
     protected InlineQuery $inline_query;
     protected string $query;
     protected $offset;
+    protected int $cache_time = 0;
 
     /**
      * Execute command
@@ -38,12 +40,14 @@ class InlinequeryCommand extends UserCommand
 
         if (preg_match('/list:(\d*)\-([a-z\_]*)\-(.*)/s', $this->query, $matches)){
             $results = $this->listMode($matches[1], $matches[2]);
-        } else {
+        } elseif (!Str::startsWith($this->query, 'list:')) {
             $results = $this->searchMode();
+        } else {
+            throw new NoResultException($this->query);
         }
 
         $options = [
-            'cache_time' => 0,
+            'cache_time' => $this->cache_time,
             'next_offset' => $this->offset == 0 ? '' : $this->offset
         ];
 
@@ -79,20 +83,27 @@ class InlinequeryCommand extends UserCommand
                 ]),
             ]);
         }
-
+        $this->cache_time = 600;
         return $results;
     }
 
-    public function searchMode(): array
+    public function searchMode()
     {
         $results = [];
 
-        $search = self::getFilms($this->query)->toArray();
+        if ($this->query != ''){
+            usleep(1.5 * 1000000);
+            $this->user->refresh();
+            if ($this->user->updated_at->addSeconds(1)->gte(Carbon::now())){
+                return Request::emptyResponse();
+            }
+        }
+
+        $search = $this->getFilms()->toArray();
 
         if (count($search) === 0) {
             throw new NoResultException($this->query);
         }
-
 
         $total_count = $this->normalizeResults($search);
         foreach ($search as $key => $item) {
@@ -132,30 +143,29 @@ class InlinequeryCommand extends UserCommand
     /**
      * Get New Films based on cache or source
      *
-     * @param string $searchQuery
      * @return Film[]
      */
-    public static function getFilms(string $searchQuery)
+    public function getFilms()
     {
-        $searchQuery = Str::lower($searchQuery);
+        $searchQuery = Str::lower($this->query);
 
-        /** @var Query $Query */
+        /** @var Query $query */
         /** @var Film $films */
         /** @var Carbon $updated_at */
-        $Query = Query::firstOrCreate(['query' => $searchQuery]);
-        $films = $Query->films;
-        $updated_at = $Query->updated_at;
+        $query = Query::firstOrCreate(['query' => $searchQuery]);
+        $films = $query->films;
 
         if ($searchQuery == ''){
             // home page
             $searchMethod = 'getHome';
-            $cacheTimeKey = 'HOME_CACHE_TIME';
+            $cacheTime = $_ENV['HOME_CACHE_TIME'];
+
         } else {
             $searchMethod = 'search';
-            $cacheTimeKey = 'SEARCH_CACHE_TIME';
+            $cacheTime = $_ENV['SEARCH_CACHE_TIME'];
         }
 
-        if ($updated_at->addSeconds($_ENV[$cacheTimeKey])->gt(Carbon::now()) && count($films)){
+        if ($query->updated_at->addSeconds($cacheTime)->gt(Carbon::now()) && count($films)){
             // Use Cache
             return $films;
         } else {
@@ -167,8 +177,8 @@ class InlinequeryCommand extends UserCommand
             }
 
             $ids = self::getFilmIds($fresh);
-
-            return $Query->syncFilms($ids)->films;
+            $this->cache_time = $cacheTime;
+            return $query->syncFilms($ids)->films;
         }
     }
 

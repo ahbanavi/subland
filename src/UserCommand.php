@@ -37,7 +37,7 @@ abstract class UserCommand extends Command
     {
         // save or update user in database
         global $local_lang;
-        $user = User::firstOrNew(['user_id' => $telegramUser->getId()]);
+        $user = User::firstOrCreate(['user_id' => $telegramUser->getId()]);
         Subscene::setLanguage($user->language);
         $local_lang = $user->local_language;
         return $this->user = $user;
@@ -76,16 +76,12 @@ abstract class UserCommand extends Command
             }
         }
 
-        $this->afterExecute();
+        return $this->afterExecute();
     }
 
     public function afterExecute()
     {
         $this->user->touch();
-
-        if ($this->user->isDirty()){
-            $this->user->save();
-        }
         return $this->response;
     }
 

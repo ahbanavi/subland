@@ -7,13 +7,15 @@ final class InitialMigration extends Migration
 {
     public function up()
     {
-        // Create Users table
-        $this->schema->create('users', function(Illuminate\Database\Schema\Blueprint $table){
-            $table->unsignedBigInteger('user_id')->primary();
-            $table->string('language',15)->default('farsi_persian');
-            $table->string('local_language',3)->default('en');
-            $table->timestamps();
-        });
+        // Create Users table if not exists
+        if (!$this->schema->hasTable('users')){
+            $this->schema->create('users', function(Illuminate\Database\Schema\Blueprint $table){
+                $table->unsignedBigInteger('user_id')->primary();
+                $table->string('language',15)->default('farsi_persian');
+                $table->string('local_language',3)->default('en');
+                $table->timestamps();
+            });
+        }
 
         // Create Queries table
         $this->schema->create('search_queries', function(Illuminate\Database\Schema\Blueprint $table){
@@ -71,6 +73,6 @@ final class InitialMigration extends Migration
         $this->schema->drop('film_query');
         $this->schema->drop('films');
         $this->schema->drop('search_queries');
-        $this->schema->drop('users');
+//        $this->schema->drop('users');
     }
 }
