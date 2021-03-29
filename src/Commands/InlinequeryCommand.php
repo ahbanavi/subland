@@ -13,7 +13,6 @@ use Longman\TelegramBot\Entities\InputMessageContent\InputTextMessageContent;
 use Longman\TelegramBot\Entities\ServerResponse;
 use SubLand\Exceptions\NoResultException;
 use SubLand\Models\Film;
-use SubLand\Models\Query;
 use SubLand\Utilities\Subscene;
 use Longman\TelegramBot\Request;
 
@@ -99,7 +98,7 @@ class InlinequeryCommand extends UserCommand
             }
         }
 
-        $search = $this->getFilms()->toArray();
+        $search = $this->getFilms();
 
         if (count($search) === 0) {
             throw new NoResultException($this->query);
@@ -141,77 +140,36 @@ class InlinequeryCommand extends UserCommand
 
 
     /**
-     * Get New Films based on cache or source
+     * Get New Films based on search query or home
      *
      * @return Film[]
      */
     public function getFilms()
     {
-        $searchQuery = Str::lower($this->query);
-
-        /** @var Query $query */
         /** @var Film $films */
-        /** @var Carbon $updated_at */
-        $query = Query::firstOrCreate(['query' => $searchQuery]);
-        $films = $query->films;
 
-        if ($searchQuery == ''){
-            // home page
-            $searchMethod = 'getHome';
-            $cacheTime = $_ENV['HOME_CACHE_TIME'];
+        $new_films = [];
+        foreach ($gen = Subscene::searchOrHome($this->query) as ['title' => $title, 'poster' => $poster, 'url' => $url, 'imdb' => $imdb]){
 
-        } else {
-            $searchMethod = 'search';
-            $cacheTime = $_ENV['SEARCH_CACHE_TIME'];
-        }
+            /** @var Film $film */
+            $film = Film::firstOrNew(['url' => $url]);
+            $film->url = $url;
+            $film->title = $title;
 
-        if ($query->updated_at->addSeconds($cacheTime)->gt(Carbon::now()) && count($films)){
-            // Use Cache
-            return $films;
-        } else {
-            // Update Cache
-            if ($searchQuery == ''){
-                $fresh = Subscene::$searchMethod();
-            } else {
-                $fresh = Subscene::$searchMethod($searchQuery);
+            if (isset($poster) && $poster != '') {
+                $film->poster = $poster;
             }
 
-            $ids = self::getFilmIds($fresh);
-            $this->cache_time = $cacheTime;
-            return $query->syncFilms($ids)->films;
+            if (isset($imdb) && $imdb != '') {
+                $film->imdb = $imdb;
+            }
+
+            $film->save();
+            $new_films[] = $film;
         }
+
+        $this->cache_time = $gen->getReturn();
+        return $new_films;
+
     }
-
-    /**
-     * Save new items to database and update old ones if required
-     *
-     * @param   array $films
-     * @return  int[]
-     */
-    private static function getFilmIds(array $films)
-    {
-        $ids = [];
-        foreach ($films as ['title' => $title, 'poster' => $poster, 'url' => $url, 'imdb' => $imdb]){
-
-            /** @var Film $new_film */
-            $new_film         = Film::firstOrNew(['url' => $url]);
-            $new_film->url    = $url;
-            $new_film->title  = $title;
-
-            if (isset($poster)) {
-                $new_film->poster = $poster;
-            }
-
-            if (isset($imdb)) {
-                $new_film->imdb = $imdb;
-            }
-
-            $new_film->save();
-            $ids[] = $new_film->film_id;
-        }
-
-        return $ids;
-    }
-
-
 }

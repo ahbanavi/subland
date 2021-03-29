@@ -3,6 +3,7 @@
 # =========================
 
 test.php
+public/test.php
 
 # Vendor directory
 vendor/

@@ -20,11 +20,6 @@ class Film extends Model
 
     protected $guarded = [];
 
-    public function results()
-    {
-        return $this->belongsToMany('SubLand\Models\Result');
-    }
-
     public function subtitles()
     {
         return $this->hasMany('SubLand\Models\Subtitle','film_id','film_id');

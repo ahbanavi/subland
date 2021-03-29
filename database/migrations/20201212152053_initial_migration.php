@@ -17,13 +17,6 @@ final class InitialMigration extends Migration
             });
         }
 
-        // Create Queries table
-        $this->schema->create('search_queries', function(Illuminate\Database\Schema\Blueprint $table){
-            $table->bigIncrements('query_id');
-            $table->string('query')->unique();
-            $table->timestamps();
-        });
-
         // Create Films table
         $this->schema->create('films', function(Illuminate\Database\Schema\Blueprint $table){
             $table->bigIncrements('film_id');
@@ -33,17 +26,6 @@ final class InitialMigration extends Migration
             $table->string('poster',500)->nullable();
             $table->string('imdb',500)->nullable();
             $table->timestamps();
-        });
-
-        // Create Film-Query pivot table
-        $this->schema->create('film_query', function(Illuminate\Database\Schema\Blueprint $table){
-            $table->bigIncrements('result_id');
-            $table->unsignedBigInteger('query_id');
-            $table->unsignedBigInteger('film_id');
-            $table->timestamps();
-
-            $table->foreign('query_id')->references('query_id')->on('search_queries');
-            $table->foreign('film_id')->references('film_id')->on('films');
         });
 
         // Create Subtitles table
@@ -70,9 +52,7 @@ final class InitialMigration extends Migration
     public function down()
     {
         $this->schema->drop('subtitles');
-        $this->schema->drop('film_query');
         $this->schema->drop('films');
-        $this->schema->drop('search_queries');
 //        $this->schema->drop('users');
     }
 }

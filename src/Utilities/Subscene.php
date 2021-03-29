@@ -37,7 +37,7 @@ class Subscene
         self::$language = $lang;
     }
 
-    public static function search(string $title, bool $exit_on_bad_request = false)
+    private static function search(string $title, bool $exit_on_bad_request = false)
     {
         $title = Helpers::removeAccents($title);
         self::$page = self::curl_post(
@@ -56,15 +56,32 @@ class Subscene
         $results = [];
         for ($i = 0; $i < count($titles); $i++) {
             $url = trim(strtolower($urls[$i]->nodeValue));
-            $results[$url] ??= [
+            if (in_array($url, $results)) continue;
+
+            yield [
                 'title' => trim($titles[$i]->nodeValue),
                 'url'   => $url,
+                // for prevent error if results from getHome
                 'poster' => '',
                 'imdb' => ''
             ];
+            $results[] = $url;
         }
+    }
 
-        return array_values($results);
+    /**
+     * @param string $query
+     * @return \Generator | int
+     */
+    public static function searchOrHome(string $query = '')
+    {
+        if ($query == ''){
+            yield from self::getHome();
+            return $_ENV['HOME_CACHE_TIME'];
+        } else {
+            yield from self::search($query);
+            return $_ENV['SEARCH_CACHE_TIME'];
+        }
     }
 
     public static function getSubtitles(string $subtitles_list_url, bool $exit_on_bad_request = false): array
@@ -187,7 +204,7 @@ class Subscene
         return $result;
     }
 
-    public static function getHome($exit_on_bad_request = false): array
+    private static function getHome($exit_on_bad_request = false)
     {
         self::$page = self::curl_get_contents(self::BASE_URL);
         if (!self::isLoaded()) {
@@ -198,8 +215,6 @@ class Subscene
             return self::getHome(true);
         }
 
-        $result = [];
-        // Popular subtitles
         for ($box = 1; $box <= 2; $box++){
             $titles = self::xpathQuery("//div[@class='popular-films']/div[@class='box'][$box]//div[@class='title']/a[1]/text()");
             $posters = self::xpathQuery("//div[@class='popular-films']/div[@class='box'][$box]//div[@class='poster']/img/@src");
@@ -207,29 +222,16 @@ class Subscene
             $urls = self::xpathQuery("//div[@class='popular-films']/div[@class='box'][$box]//div[@class='title']/a[1]/@href");
 
             for ($i = 0; $i < count($titles); $i++) {
-                $item = [
+                yield [
                     'title'  => trim($titles[$i]->nodeValue),
                     'poster' => $posters[$i]->nodeValue,
                     'url'    => $urls[$i]->nodeValue,
                     'imdb'   => $imdbs[$i]->nodeValue ?? null
                 ];
-
-                $result[] = $item;
             }
         }
-
-        return $result;
     }
 
-    public static function getDownload(string $url, string $filename): void
-    {
-        $data = self::curl_get_contents($url);
-        $file_name = $filename;
-        header('Content-Type: application/zip');
-        header("Content-Disposition: attachment; filename=$file_name");
-        header('Content-Length: '.strlen($data));
-        echo $data;
-    }
 
     private static function curl_get_contents(string $url,$set_cookie = false): string
     {
