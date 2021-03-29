@@ -5,6 +5,7 @@ return [
     'bot_username' => $_ENV['BOT_USER_NAME'],
     'webhook'      => [
         'url' => $_ENV['HOOK_URL'],
+        'blank_page' => $_ENV['BLANK_URL'],
         'max_connections' => 100
     ],
     'admins' => [],
