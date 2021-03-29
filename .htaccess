@@ -1,0 +1,24 @@
+RewriteEngine on
+RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+RewriteRule ^ %1 [L,NE,R=302]
+RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php74” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php74 .php .php7 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
+# BEGIN cPanel-generated php ini directives, do not edit
+# Manual editing of this file may result in unexpected behavior.
+# To make changes to this file, use the cPanel MultiPHP INI Editor (Home >> Software >> MultiPHP INI Editor)
+# For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
+<IfModule php7_module>
+   php_value error_reporting E_ALL & ~E_NOTICE & ~E_DEPRECATED
+</IfModule>
+<IfModule lsapi_module>
+   php_value error_reporting E_ALL & ~E_NOTICE & ~E_DEPRECATED
+</IfModule>
+# END cPanel-generated php ini directives, do not edit
+Options -Indexes
+

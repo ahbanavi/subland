@@ -1,7 +1,8 @@
 <?php
 
 /** @var array $config */
-require_once 'bootstrap/boot.php';
+
+require_once '../bootstrap/boot.php';
 
 try {
     // Create Telegram API object

@@ -1,8 +1,8 @@
 <?php
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-error_reporting(E_ALL);
-require_once 'vendor/autoload.php';
+#error_reporting(E_ALL);
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 $local_lang = 'en';
 $translator_arr = [];
 

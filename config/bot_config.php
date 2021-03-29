@@ -12,7 +12,7 @@ return [
     'validate_request' => false,
     'commands'         => [
         'paths'   => [
-            'src/Commands',
+            dirname(__DIR__) . '/src/Commands',
         ],
     ]
 ];

@@ -2,7 +2,7 @@
 
 use SubLand\Utilities\Helpers;
 
-require_once 'bootstrap/boot.php';
+require_once '../bootstrap/boot.php';
 
 $telegramIPs = [
     // literally 149.154.160.0/20
