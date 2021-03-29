@@ -3,6 +3,7 @@
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use Longman\TelegramBot\Commands\UserCommand;
+use Longman\TelegramBot\Entities\CallbackQuery;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 use SubLand\Exceptions\SubNotFoundException;
@@ -16,6 +17,10 @@ class CallbackqueryCommand extends UserCommand
     use HasSubtitle;
     use Language;
 
+
+    /**
+     * @var CallbackQuery
+     */
     protected $callback_query;
 
     /**
@@ -32,7 +37,7 @@ class CallbackqueryCommand extends UserCommand
         $callback_data = json_decode($this->callback_query->getData());
 
         $data = [];
-        if (array_key_exists('subtitle_id',$callback_data)){
+        if (property_exists($callback_data, 'subtitle_id')){
             $subtitle = Subtitle::find($callback_data->subtitle_id);
             if (!$subtitle){
                 throw new SubNotFoundException();
@@ -82,9 +87,8 @@ class CallbackqueryCommand extends UserCommand
         }
 
 
-        $this->response = Request::editMessageText($data);
+        $response = Request::editMessageText($data);
         $this->callback_query->answer(['text' => 'Done.', 'show_alert' => false]);
-
-        return $this->response;
+        return $response;
     }
 }

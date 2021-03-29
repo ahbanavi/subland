@@ -17,7 +17,7 @@ $telegramIPs = [
     ],
 ];
 
-$ip_dec = (float) sprintf("%u", ip2long($_SERVER['HTTP_X_FORWARDED_FOR']));
+$ip_dec = (float) sprintf("%u", ip2long($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR']));
 $isTelegram = false;
 foreach ($telegramIPs as $telegramIP) {
     if (!$isTelegram) {

@@ -1,18 +1,7 @@
 <?php
 
-/**
- * This file is part of the TelegramBot package.
- *
- * (c) Avtandil Kikabidze aka LONGMAN <akalongman@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-
 namespace Longman\TelegramBot\Commands;
 
-use Carbon\Carbon;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Request;
@@ -25,13 +14,10 @@ use SubLand\Utilities\Subscene;
 abstract class UserCommand extends Command
 {
 
-
     /**
      * @var User
      */
-    protected $user;
-
-    protected $response;
+    protected User $user;
 
     protected function setUser(\Longman\TelegramBot\Entities\User $telegramUser): User
     {
@@ -51,14 +37,17 @@ abstract class UserCommand extends Command
      */
     public function preExecute() :ServerResponse
     {
+
         try {
-            $this->execute();
-        } catch (NoResultException $exception){
-            $this->response = $this->inline_query->answer([$exception->getResponse()],['cache_time' => 0]);
-        } catch (SubNotFoundException $exception){
+            return $this->execute();
+        }
+        catch (NoResultException $exception){
+            return $this->inline_query->answer([$exception->getResponse()],['cache_time' => 0]);
+        }
+        catch (SubNotFoundException $exception){
             if (isset($this->callback_query)){
                 $this->callback_query->answer(['text' => $exception->getMessage() ?? 'متاسفانه زیرنویس مورد نظر در دیتابیس یافت نشد. لطفا مجددا جستجو نمایید.','show_alert' => true]);
-                $this->response = null;
+                return Request::emptyResponse();
             } elseif (isset($this->inline_query)){
                 $lang = Subscene::LANGUAGES[$this->user->language];
                 $data = [
@@ -72,17 +61,14 @@ abstract class UserCommand extends Command
                     ]
                 ];
 
-                $this->response = Request::editMessageText($data);
+                return Request::editMessageText($data);
             }
         }
-
-        return $this->afterExecute();
-    }
-
-    public function afterExecute()
-    {
-        $this->user->touch();
-        return $this->response;
+        finally {
+            if (isset($this->user)){
+                $this->user->touch();
+            }
+        }
     }
 
 }

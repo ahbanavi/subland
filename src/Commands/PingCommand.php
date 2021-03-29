@@ -22,6 +22,6 @@ class PingCommand extends UserCommand
         $this->setUser($message->getFrom());
         $chat_id = $message->getChat()->getId();
 
-        return $this->response = Request::sendMessage(['chat_id' => $chat_id, 'text' => 'Pong']);
+        return Request::sendMessage(['chat_id' => $chat_id, 'text' => 'Pong']);
     }
 }

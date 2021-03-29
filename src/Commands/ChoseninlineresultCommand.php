@@ -79,7 +79,7 @@ class ChoseninlineresultCommand extends UserCommand
             'reply_markup' => $this->getSubtitleKeyboard($subtitle, $this->inline_message_id)
         ];
 
-        $this->response = Request::editMessageText($data);
+        $response = Request::editMessageText($data);
 
         if ($listMode) {
             // Update Searching Message...
@@ -89,7 +89,7 @@ class ChoseninlineresultCommand extends UserCommand
             ]);
         }
 
-        return $this->response;
+        return $response;
     }
 
 }

@@ -37,7 +37,7 @@ class HelpCommand extends UserCommand
             ]
         ];
 
-        return $this->response = Request::sendMessage($data);
+        return Request::sendMessage($data);
     }
 
 

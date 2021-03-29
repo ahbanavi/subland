@@ -56,7 +56,7 @@ class InlinequeryCommand extends UserCommand
         if ($switchPM ?? false)
             $options[] = ['switch_pm_parameter' => urlencode($switchPM)];
 
-        return $this->response = $this->inline_query->answer($results,$options);
+        return $this->inline_query->answer($results,$options);
     }
 
 

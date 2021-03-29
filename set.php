@@ -8,7 +8,7 @@ try {
     $telegram = new Longman\TelegramBot\Telegram($config['api_key'], $config['bot_username']);
 
     // Set webhook
-    $result = $telegram->setWebhook($config['webhook']['url']);
+    $result = $telegram->setWebhook($config['webhook']['url'], $config['webhook']);
     if ($result->isOk()) {
         echo $result->getDescription();
     }

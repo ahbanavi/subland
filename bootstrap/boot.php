@@ -1,10 +1,9 @@
 <?php
-
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 error_reporting(E_ALL);
 require_once 'vendor/autoload.php';
-$local_lang = 'fa';
+$local_lang = 'en';
 $translator_arr = [];
 
 // translator function

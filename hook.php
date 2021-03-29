@@ -16,10 +16,10 @@ try {
             (new StreamHandler('debug_log.log', Logger::DEBUG))->setFormatter(new LineFormatter(null, null, true)),
             (new StreamHandler('error_log.log', Logger::ERROR))->setFormatter(new LineFormatter(null, null, true)),
         ]),
-        // Updates logger for raw updates.
-        new Logger('telegram_bot_updates', [
-            (new StreamHandler('updates_log.log', Logger::INFO))->setFormatter(new LineFormatter('%message%' . PHP_EOL)),
-        ])
+//        // Updates logger for raw updates.
+//        new Logger('telegram_bot_updates', [
+//            (new StreamHandler('updates_log.log', Logger::INFO))->setFormatter(new LineFormatter('%message%' . PHP_EOL)),
+//        ])
     );
 
     $telegram = new Longman\TelegramBot\Telegram($config['api_key'], $config['bot_username']);
