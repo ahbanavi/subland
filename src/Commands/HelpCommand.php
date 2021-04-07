@@ -37,7 +37,8 @@ class HelpCommand extends UserCommand
             ]
         ];
 
-        return Request::sendMessage($data);
+        Request::sendMessage($data);
+        return Request::sendMessage(['chat_id' => $chat_id, 'text' => trans('tldr'), 'parse_mode' => 'markdown']);
     }
 
 

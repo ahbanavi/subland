@@ -26,6 +26,14 @@ MYHEREDOC,
 🌍 Your current subtitle language for searching is %lang
 For changing, chose another language from below:
 MYHEREDOC,
+    'tldr' => <<< MYHEREDOC
+💬     TL;DR
+
+Inline Mode => for searching subtitles.
+/lang => for changing *Subtitle* language.
+/settings  => for changing *Robot* language.
+/help => for see this and above message.
+MYHEREDOC,
     'key_try_here' => 'Try it in here',
     'key_try_else' => 'Or in another chat',
     'key_next' => 'Next',
