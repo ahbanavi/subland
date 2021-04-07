@@ -8,7 +8,7 @@ With this robot, you can get subtitles of movies and tv shows directly from subs
 
 This bot works in Inline mode, wich means you can use it in any chats just by typing the name of a movie or show in front of the bot user name.
 
-🌎 Also for changing subtitle language, use /settings command.
+🌎 Also for changing subtitle language, use /lang command.
 
 ✍️ Feel free to drop any questions or issues [here](https://t.me/yedoost).
 
@@ -20,8 +20,7 @@ Examples:
 or
 @$_ENV[BOT_USER_NAME] game of thrones
 ```
-Use /lang command for changing bot language
-برای تغییر زبان ربات از دستور /lang استفاده کن.
+برای تغییر زبان ربات از دستور /settings استفاده کن.
 MYHEREDOC,
     'change_subtitle_language' => <<< MYHEREDOC
 🌍 Your current subtitle language for searching is %lang
@@ -32,7 +31,7 @@ MYHEREDOC,
     'key_next' => 'Next',
     'key_previous' => 'Previous',
     'key_list' => 'List view',
-    'success_change_local_language' => "🗣 Hooray! Now I speak English.\nfor more information use /start.",
+    'success_change_local_language' => "🗣 Hooray! Now I speak English.\nfor more information use /help.",
     'loading' => 'Loading...',
     'subtitle_loaded' => 'Subtitle loaded!'
 ];

@@ -6,12 +6,9 @@ use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Request;
-use SubLand\Traits\Language;
 
 class SettingsCommand extends UserCommand
 {
-    use Language;
-
     /**
      * Execute command
      *
@@ -26,9 +23,12 @@ class SettingsCommand extends UserCommand
 
         $data = [
             'chat_id' => $chat_id,
-            'text' => $this->getLanguageMessage(),
+            'text' => "🌎 Select Robot language | زبان ربات را انتخاب کنید",
             'reply_markup' => [
-                'inline_keyboard' => $this->getLanguageKeys()
+                'inline_keyboard' => [[
+                    ['text' => 'English🇬🇧','callback_data' => json_encode(['local_language' => 'en'])],
+                    ['text' => 'فارسی🇮🇷','callback_data' => json_encode(['local_language' => 'fa'])],
+                ]]
             ]
         ];
 

@@ -18,4 +18,3 @@ try {
     // log telegram errors
     // echo $e->getMessage();
 }
-echo 'hi';
