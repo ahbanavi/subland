@@ -14,13 +14,13 @@ class NoResultException extends \Exception
     {
         return new InlineQueryResultArticle([
             'id' => -1,
-            'title' => 'نتیجه ای یافت نشد!',
+            'title' => trans('no_results_found'),
             'input_message_content' => new InputTextMessageContent([
-                'message_text' => 'نتیجه ای یافت نشد!'
+                'message_text' => trans('no_results_found')
             ]),
             'reply_markup' => new InlineKeyboard([
                 new InlineKeyboardButton([
-                    'text' => '🔍 جستجو مجدد...',
+                    'text' => trans('try_again'),
                     'switch_inline_query_current_chat' => $this->getMessage()
                 ])
             ])

@@ -75,7 +75,7 @@ class InlinequeryCommand extends UserCommand
                 'title' => $subtitle['author_name'] . ($subtitle['extra'] != '' ? ' |' . $subtitle['extra'] : ''),
                 'description' =>  $subtitle['comment'] . $subtitle['info'],
                 'input_message_content' => new InputTextMessageContent([
-                    'message_text' => trans('loading'),
+                    'message_text' => 'loading...',
                 ]),
                 'reply_markup' => new InlineKeyboard([
                     new InlineKeyboardButton(['text' => 'Subscene URL','url' => Subscene::BASE_URL . $subtitle['url']])
@@ -112,7 +112,7 @@ class InlinequeryCommand extends UserCommand
                 'thumb_url' => $item['poster'] ?? '',
                 'description' =>  $key + 1 . '/' . $total_count,
                 'input_message_content' => new InputTextMessageContent([
-                    'message_text' => trans('loading'),
+                    'message_text' => 'loading...',
                 ]),
                 'reply_markup' => new InlineKeyboard([
                     new InlineKeyboardButton(['text' => 'Subscene URL','url' => Subscene::BASE_URL . $item['url']])

@@ -36,8 +36,9 @@ class CallbackqueryCommand extends UserCommand
         $inline_message_id = $this->callback_query->getInlineMessageId();
         $callback_data = json_decode($this->callback_query->getData());
 
-        $data = [];
+
         if (property_exists($callback_data, 'subtitle_id')){
+            $answer = trans('subtitle_loaded');
             $subtitle = Subtitle::find($callback_data->subtitle_id);
             if (!$subtitle){
                 throw new SubNotFoundException();
@@ -54,8 +55,9 @@ class CallbackqueryCommand extends UserCommand
                 'reply_markup' => $this->getSubtitleKeyboard($subtitle, $inline_message_id)
             ];
 
-        } elseif (array_key_exists('language',$callback_data)){
+        } elseif (property_exists($callback_data, 'language')){
             if (in_array($callback_data->language, array_keys(Subscene::LANGUAGES))){
+                $answer = trans('sub_lang_answer');
                 $this->user->language = $callback_data->language;
                 $this->user->save();
                 $this->user->refresh();
@@ -70,13 +72,14 @@ class CallbackqueryCommand extends UserCommand
                 ];
             }
 
-        } elseif (array_key_exists('local_language',$callback_data)){
+        } elseif (property_exists($callback_data, 'local_language')){
             if (in_array($callback_data->local_language, ['en', 'fa'])){
                 global $local_lang;
                 $this->user->local_language = $local_lang = $callback_data->local_language;
                 $this->user->save();
                 $this->user->refresh();
 
+                $answer = trans('local_lang_answer');
                 $data = [
                     'text' => trans('success_change_local_language'),
                     'chat_id' => $this->user->user_id,
@@ -92,7 +95,7 @@ class CallbackqueryCommand extends UserCommand
 
 
         $response = Request::editMessageText($data);
-        $this->callback_query->answer(['text' => 'Done.', 'show_alert' => false]);
+        $this->callback_query->answer(['text' => $answer ?? 'Done!', 'show_alert' => false]);
         return $response;
     }
 }
