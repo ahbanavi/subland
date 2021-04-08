@@ -24,7 +24,7 @@ or
 MYHEREDOC,
     'change_subtitle_language' => <<< MYHEREDOC
 🌍 Your current subtitle language for searching is %lang
-For changing, chose another subtitle language from below:
+For changing, choose another subtitle language from below:
 MYHEREDOC,
     'tldr' => <<< MYHEREDOC
 💬     TL;DR
