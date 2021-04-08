@@ -84,6 +84,10 @@ class CallbackqueryCommand extends UserCommand
                 ];
             }
 
+        } elseif (property_exists($callback_data, 'just_one')){
+            return $this->callback_query->answer(['text' => trans('just_one_callback'), 'show_alert' => true, 'cache_time' => PHP_INT_MAX]);
+        } else {
+            return $this->callback_query->answer(['text' => trans('dont_understand'), 'show_alert' => true, 'cache_time' => PHP_INT_MAX]);
         }
 
 

@@ -75,6 +75,15 @@ MYHEREDOC;
             ];
         }
 
+        if (!$control_key){
+            return new InlineKeyboard([[
+                'text' => trans('just_one'),
+                'callback_data' => json_encode([
+                    'just_one' => ''
+                ])
+            ]]);
+        }
+
         global $local_lang;
         if ($local_lang == 'fa'){
             $control_key = array_reverse($control_key);
