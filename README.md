@@ -10,7 +10,7 @@ With [this robot][sublandbot-url], you can get subtitles of movies and TV shows 
 - Search subtitles for movies. *(inline mode)*
 - Search subtitles for TV series and anime. *(inline mode)*
 - See subscene home page. *(empty search query in inline mode)*
-- Cashing subtitles for better performance. [*(See Caching)*](#gear-caching)
+- Caching subtitles for better performance. [*(See Caching)*](#gear-caching)
 - Search **subtitles** in 6 languages: *(/lang command)*
 	- Persian :iran:
 	- English :gb:
@@ -52,7 +52,7 @@ If you want to contact me you can reach me at <yedoost@att.net>.
 
 This project uses the following license: [GNU General Public License v3.0](LICENSE).
 
-## Links
+## :link: Links
 
 - [Subland Telegram Robot][sublandbot-url]
 
