@@ -3,7 +3,6 @@
 namespace SubLand\Utilities;
 
 use CURLFile;
-use Illuminate\Support\Str;
 
 class Helpers {
 
@@ -123,13 +122,13 @@ class Helpers {
         $res_json = curl_exec($ch);
         curl_close($ch);
 
+        // remove temp file before return
+        fclose($temp);
+
         if ($res_json === false)
             return false;
 
         $res = json_decode($res_json);
-
-        // remove temp file before return
-        fclose($temp);
 
         if ($res->ok){
             return $res;
