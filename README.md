@@ -1,15 +1,16 @@
 
 
-<p align="center"><img src="https://user-images.githubusercontent.com/39927312/115019142-00df0700-9ece-11eb-9559-d1af23d6b93f.png" title="Telegram Subscene Robot" alt="Telegram Subscene Robot"></p
+<p align="center"><img src="https://user-images.githubusercontent.com/39927312/115019142-00df0700-9ece-11eb-9559-d1af23d6b93f.png" title="Telegram Subscene Robot" alt="Telegram Subscene Robot"></p>
 
-#  Telegram Subscene Robot [@SubLandBot][sublandbot-url]
+
+# Telegram Subscene Robot [@SubLandBot][sublandbot-url]
 With [this robot][sublandbot-url], you can get subtitles of movies and TV shows directly from subscene in [telegram](https://telegram.org/).
 
 ## :sparkles: Features
 - Search subtitles for movies. *(inline mode)*
 - Search subtitles for TV series and anime. *(inline mode)*
 - See subscene home page. *(empty search query in inline mode)*
-- Cashing subtitles for better performance. [*(See Caching)*](#caching)
+- Cashing subtitles for better performance. [*(See Caching)*](#gear-caching)
 - Search **subtitles** in 6 languages: *(/lang command)*
 	- Persian :iran:
 	- English :gb:
