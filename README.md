@@ -38,9 +38,8 @@ Currently cache settings for [@SubLandBot][sublandbot-url] are:
 |`SUBTITLE_CACHE_TIME`|1 hour| For caching subtitle results
 
 
-## :black_nib: Credits
+## :heart: Acknowledgements
 
-- [Amirhossein Banavi](https://github.com/ahbanavi)
 - [Nima HeydariNasab](https://github.com/nimah79)
 	- for [Subscene.php](src/Utilities/Subscene.php) file; that's a modified version of [this project](https://github.com/nimah79/Subscene-API-PHP).
 
