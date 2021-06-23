@@ -215,19 +215,18 @@ class Subscene
             return self::getHome(true);
         }
 
-        for ($box = 1; $box <= 2; $box++){
-            $titles = self::xpathQuery("//div[@class='popular-films']/div[@class='box'][$box]//div[@class='title']/a[1]/text()");
-            $posters = self::xpathQuery("//div[@class='popular-films']/div[@class='box'][$box]//div[@class='poster']");
-            $imdbs = self::xpathQuery("//div[@class='popular-films']/div[@class='box'][$box]//div[@class='title']/a[2]/@href");
-            $urls = self::xpathQuery("//div[@class='popular-films']/div[@class='box'][$box]//div[@class='title']/a[1]/@href");
-            for ($i = 0; $i < count($titles); $i++) {
-                yield [
-                    'title'  => trim($titles[$i]->nodeValue),
-                    'poster' => self::xpathQuery('//img/@src', $posters[$i]->C14N())[0]->nodeValue,
-                    'url'    => $urls[$i]->nodeValue,
-                    'imdb'   => $imdbs[$i]->nodeValue ?? null
-                ];
-            }
+        $box = "//div[@class='popular-films']/div[@class='box'][(1 or 2)]";
+        $titles = self::xpathQuery("$box//div[@class='title']/a[1]/text()");
+        $posters = self::xpathQuery("$box//div[@class='poster']");
+        $imdbs = self::xpathQuery("$box//div[@class='title']/a[2]/@href");
+        $urls = self::xpathQuery("$box//div[@class='title']/a[1]/@href");
+        for ($i = 0; $i < $titles->count(); $i++) {
+            yield [
+                'title'  => trim($titles[$i]->nodeValue),
+                'poster' => self::xpathQuery('//img/@src', $posters[$i]->C14N())[0]->nodeValue,
+                'url'    => trim($urls[$i]->nodeValue),
+                'imdb'   => $imdbs[$i]->nodeValue ?? null
+            ];
         }
     }
 
