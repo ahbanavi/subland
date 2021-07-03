@@ -22,6 +22,6 @@ class Film extends Model
 
     public function subtitles()
     {
-        return $this->hasMany('SubLand\Models\Subtitle','film_id','film_id');
+        return $this->hasMany(Subtitle::class,'film_id','film_id');
     }
 }

@@ -27,7 +27,7 @@ class Subtitle extends Model
 
     public function film()
     {
-        return $this->hasOne('SubLand\Models\Film','film_id','film_id');
+        return $this->belongsTo(Film::class,'film_id','film_id');
     }
 
 
