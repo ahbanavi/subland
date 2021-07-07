@@ -21,7 +21,7 @@ class InlinequeryCommand extends UserCommand
     protected InlineQuery $inline_query;
     protected string $query;
     protected $offset;
-    protected int $cache_time = 0;
+    protected int $cache_time = 5;
 
     /**
      * Execute command
