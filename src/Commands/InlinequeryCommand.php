@@ -90,17 +90,28 @@ class InlinequeryCommand extends UserCommand
     {
         $results = [];
 
-        if ($this->query != ''){
-            usleep(1.5 * 1000000);
-            $this->user->refresh();
-            if ($this->user->updated_at->addSeconds(1)->gte(Carbon::now())){
-                return Request::emptyResponse();
-            }
-        }
+        ## I comment these lines because there are some problems with this approach for debouncing till I find a better solution.
+//        if ($this->query != ''){
+//            usleep(1.5 * 1000000);
+//            $this->user->refresh();
+//            if ($this->user->updated_at->addSeconds(1)->gte(Carbon::now())){
+//                return Request::emptyResponse();
+//            }
+//        }
 
-        $search = $this->getFilms();
+
+        # Check if there's any results for the query multiple times to avoid any false positives.
+        $counter = 0;
+        do {
+            $counter++;
+            if ($counter > 1) {
+                usleep($counter / 2 * 1000000);
+            }
+            $search = $this->getFilms();
+        } while (count($search) === 0 && $counter < 5);
 
         if (count($search) === 0) {
+            # No results found. Return an empty response.
             throw new NoResultException($this->query);
         }
 
