@@ -73,7 +73,7 @@ class CallbackqueryCommand extends UserCommand
             }
 
         } elseif (property_exists($callback_data, 'local_language')){
-            if (in_array($callback_data->local_language, ['en', 'fa'])){
+            if (in_array($callback_data->local_language, ['en', 'fa', 'ar'])){
                 global $local_lang;
                 $this->user->local_language = $local_lang = $callback_data->local_language;
                 $this->user->save();

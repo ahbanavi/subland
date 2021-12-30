@@ -28,6 +28,7 @@ class SettingsCommand extends UserCommand
                 'inline_keyboard' => [[
                     ['text' => 'English🇬🇧','callback_data' => json_encode(['local_language' => 'en'])],
                     ['text' => 'فارسی🇮🇷','callback_data' => json_encode(['local_language' => 'fa'])],
+                    ['text' => '🇦🇪عربی','callback_data' => json_encode(['local_language' => 'ar'])],
                 ]]
             ]
         ];

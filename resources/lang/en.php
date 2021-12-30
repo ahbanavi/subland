@@ -21,6 +21,7 @@ or
 @$_ENV[BOT_USER_NAME] game of thrones
 ```
 برای تغییر زبان ربات از دستور /settings استفاده کن.
+لتغيير لغة البوت استخدم هذا الامر /settings.
 MYHEREDOC,
     'change_subtitle_language' => <<< MYHEREDOC
 🌍 Your current subtitle language for searching is %lang

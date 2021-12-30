@@ -24,7 +24,7 @@ class HelpCommand extends UserCommand
             ['text' => trans('key_try_here'),'switch_inline_query_current_chat' => ''],
             ['text' => trans('key_try_else'),'switch_inline_query' => '']
         ];
-        if ($this->user->local_language == 'fa'){
+        if (in_array($this->user->local_language, ['fa', 'ar'])){
             $keys = array_reverse($keys);
         }
         $data = [

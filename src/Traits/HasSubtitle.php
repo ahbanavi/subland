@@ -85,7 +85,7 @@ MYHEREDOC;
         }
 
         global $local_lang;
-        if ($local_lang == 'fa'){
+        if (in_array($local_lang, ['fa', 'ar'])){
             $control_key = array_reverse($control_key);
         }
         $list_key = [[
