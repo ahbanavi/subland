@@ -5,16 +5,43 @@ use SubLand\Utilities\Helpers;
 require_once '../bootstrap/boot.php';
 
 $telegramIPs = [
-    // literally 149.154.160.0/20
+    // based on https://ipinfo.io/AS62041
+
+    // 149.154.160.0/22
     [
         'lower' => (float) sprintf("%u", ip2long('149.154.160.0')),
-        'upper' => (float) sprintf("%u", ip2long('149.154.175.255'))
+        'upper' => (float) sprintf("%u", ip2long('149.154.163.255'))
     ],
-    // literally 91.108.4.0/22
+
+    // 149.154.164.0/22
+    [
+        'lower' => (float) sprintf("%u", ip2long('149.154.164.0')),
+        'upper' => (float) sprintf("%u", ip2long('149.154.167.255'))
+    ],
+
+    // 91.108.4.0/22
     [
         'lower' => (float) sprintf("%u", ip2long('91.108.4.0')),
         'upper' => (float) sprintf("%u", ip2long('91.108.7.255'))
     ],
+
+    // 91.108.56.0/22
+    [
+        'lower' => (float) sprintf("%u", ip2long('91.108.56.0')),
+        'upper' => (float) sprintf("%u", ip2long('91.108.59.255'))
+    ],
+
+    // 91.108.8.0/22
+    [
+        'lower' => (float) sprintf("%u", ip2long('91.108.8.0')),
+        'upper' => (float) sprintf("%u", ip2long('91.108.11.255'))
+    ],
+
+    // 95.161.64.0/20
+    [
+        'lower' => (float) sprintf("%u", ip2long('95.161.64.0')),
+        'upper' => (float) sprintf("%u", ip2long('95.161.79.255'))
+    ]
 ];
 
 $ip_dec = (float) sprintf("%u", ip2long($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR']));
